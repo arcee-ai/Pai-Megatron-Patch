@@ -425,8 +425,8 @@ def convert_checkpoint_from_transformers_to_megatron(args):
                     layer_name = f"layers.{layer}.{out_name}.layer_norm_weight"
 
                 elif op_name.startswith("post_attention_layernorm") and weight_or_bias == "weight":
-                    out_name = "pre_mlp_layernorm"
-                    layer_name = f"layers.{layer}.{out_name}.{weight_or_bias}"
+                    out_name = "mlp.linear_fc1.layer_norm_weight"
+                    layer_name = f"layers.{layer}.{out_name}"
 
                 # handle attention K, V, Q weights
                 elif op_name.startswith("self_attn.query") and weight_or_bias == "weight":
@@ -637,6 +637,12 @@ def convert_checkpoint_from_megatron_to_transformers(args):
                 key_list = key.split('.')
                 layer_id = int(key_list[2]) + pp_rank * num_layers
                 dim = 1 if 'linear_fc2' in key else 0
+
+                if "linear_fc1.layer_norm_weight" in key:
+                    params = val.to(dtype)
+                    output_state_dict[f'model.layers.{layer_id}.post_attention_layernorm.weight'] = params
+                    continue
+
                 params = torch.cat(
                     [val]
                     + [

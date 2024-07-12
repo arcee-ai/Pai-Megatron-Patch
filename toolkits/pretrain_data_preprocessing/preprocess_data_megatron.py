@@ -75,8 +75,10 @@ class Encoder(object):
             doc_ids = []
             sentence_lens = []
             for sentence in sentences:
-                #sentence_ids = Encoder.tokenizer.tokenize(sentence)
-                sentence_ids = Encoder.tokenizer(sentence, add_special_tokens=False)['input_ids']
+                if self.args.patch_tokenizer_type in ["DeepSeekV2Tokenizer", "Qwen2Tokenizer", "LLama3Tokenizer"]:
+                    sentence_ids = Encoder.tokenizer.tokenizer(sentence, add_special_tokens=False)['input_ids']
+                else:
+                    sentence_ids = Encoder.tokenizer(sentence, add_special_tokens=False)['input_ids']
                 if max(sentence_ids) >= Encoder.tokenizer.vocab_size:
                     print(text)
                     print(max(sentence_ids))
@@ -183,7 +185,7 @@ def get_args():
                        help='Keep newlines between sentences when splitting.')
 
     group = parser.add_argument_group(title='tokenizer')
-    group.add_argument('--tokenizer-type', type=str, required=True,
+    group.add_argument('--tokenizer-type', type=str, required=False, default='GPT2BPETokenizer',
                        choices=['BertWordPieceLowerCase','BertWordPieceCase',
                                 'GPT2BPETokenizer', 'SentencePieceTokenizer',
                                 'GPTSentencePieceTokenizer', 'Llama2Tokenizer',
@@ -221,7 +223,7 @@ def get_args():
         '--patch-tokenizer-type',
         type=str,
         required=True,
-        choices=['Qwen2Tokenizer', 'LLamaTokenizer'],
+        choices=['Qwen2Tokenizer', 'LLamaTokenizer', 'DeepSeekV2Tokenizer', 'LLama3Tokenizer'],
         help='What type of tokenizer to use.',
     )
     group.add_argument('--load',
@@ -293,7 +295,8 @@ def main():
             'output_prefix': args.output_prefix}
         in_ss_out_names.append(file_names)
     else:
-        in_file_names = glob.glob(args.input)
+        file_list = os.listdir(args.input)
+        in_file_names = [os.path.join(args.input, file) for file in file_list]
 
         # Count total number of lines across .jsonl files
         if args.keep_sequential_samples:

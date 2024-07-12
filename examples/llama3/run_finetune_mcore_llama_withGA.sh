@@ -78,7 +78,9 @@ fi
 
 if [ $PR = fp16 ]; then
     pr_options=" \
-		    --fp16"
+		    --fp16 \
+            --apply-query-key-layer-scaling"
+    export NVTE_APPLY_QK_LAYER_SCALING=1
 elif [ $PR = bf16 ]; then
     pr_options=" \
         --bf16"
@@ -170,9 +172,7 @@ megatron_options="  \
         --adam-beta2 0.95 \
         --weight-decay 0.1 \
         --clip-grad 1.0 \
-        --init-method-std 0.008 \
-        --attention-dropout 0.0 \
-        --hidden-dropout 0.0 \
+        --init-method-std 0.006 \
         --dataloader-type cyclic \
         --lr-decay-iters ${LR_DECAY_ITERS} \
         --lr-warmup-iters ${LR_WARMUP_ITERS} \
@@ -215,6 +215,7 @@ megatron_options="  \
         --attention-dropout 0.0 \
         --hidden-dropout 0.0 \
         --norm-epsilon 1e-05 \
+        --eod-mask-loss \
         "
 
 run_cmd="torchrun $DISTRIBUTED_ARGS pretrain_llama.py

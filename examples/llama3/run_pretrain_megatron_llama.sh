@@ -2,7 +2,7 @@
 set -e
 ENV=$1
 MEGATRON_PATCH_PATH=$2
-MEGATRON_PATH=${MEGATRON_PATCH_PATH}/Megatron-LM-240405
+MEGATRON_PATH=${MEGATRON_PATCH_PATH}/Megatron-LM-231007
 export PYTHONPATH=${MEGATRON_PATH}:${MEGATRON_PATCH_PATH}:$PYTHONPATH
 export CUDA_DEVICE_MAX_CONNECTIONS=1
 if [ $ENV = dsw ]; then
@@ -146,6 +146,7 @@ SAVED_PRETRAIN_CHECKPOINT_PATH="${OUTPUT_BASEPATH}/checkpoint/${NAME}"
 megatron_options="  \
         --save ${SAVED_PRETRAIN_CHECKPOINT_PATH} \
         --split 99,1,0 \
+        --train-data-path ${DATASET_PATH} \
         --data-path ${DATASET_PATH} \
         --lr ${LR} \
         --min-lr ${MIN_LR} \
@@ -184,7 +185,7 @@ megatron_options="  \
         --num-workers 8 \
         --seed 1234 \
         --extra-vocab-size ${EXTRA_VOCAB_SIZE} \
-        --patch-tokenizer-type LLama3Tokenizer \
+        --patch-tokenizer-type LLamaTokenizer \
         --swiglu \
         --normalization RMSNorm \
         --use-rotary-position-embeddings \
@@ -197,7 +198,7 @@ megatron_options="  \
         --norm-epsilon 1e-05 \
         "
 
-run_cmd="torchrun $DISTRIBUTED_ARGS pretrain_llama.py
+run_cmd="torchrun $DISTRIBUTED_ARGS ../llama2/pretrain_megatron_llama.py
  ${megatron_options} ${pr_options} ${load_options} ${te_options} ${activation_checkpoint_options} ${do_options} ${flash_options} ${sp_options} ${gqa_options}"
 
 echo ${run_cmd}

@@ -339,4 +339,76 @@ def get_patch_args(parser):
     group.add_argument('--num-fewshot', type=int, default=None,
                        help='num fewshot')
 
+    group.add_argument(
+        '--convert-checkpoint-from-megatron-to-transformers',
+        action='store_true',
+        help=
+        ('If True, convert a Megatron checkpoint to a Transformers checkpoint. '
+         'If False, convert a Transformers checkpoint to a Megatron checkpoint.'
+         ),
+    )
+
+    group.add_argument(
+        "--moe-ffn-hidden-size",
+        type=int,
+        default=None
+    )
+
+    group.add_argument(
+        "--shared-moe-ffn-hidden-size",
+        type=int,
+        default=None
+    )
+
+    group.add_argument('--enable-shared-expert', action='store_true',
+                       help='enable-shared-expert')
+
+    group.add_argument(
+        "--q-lora-rank",
+        type=int,
+        default=None
+    )
+
+    group.add_argument(
+        "--kv-lora-rank",
+        type=int,
+        default=None
+    )
+
+    group.add_argument(
+        "--qk-nope-head-dim",
+        type=int,
+        default=None
+    )
+
+    group.add_argument(
+        "--qk-rope-head-dim",
+        type=int,
+        default=None
+    )
+
+    group.add_argument(
+        "--v-head-dim",
+        type=int,
+        default=None
+    )
+
+    group.add_argument(
+        "--num-shared-experts",
+        type=int,
+        default=None
+    )
+
+    group.add_argument(
+        "--moe-layer-freq",
+        type=int,
+        default=1
+    )
+
+    group.add_argument(
+        "--rotary-scaling-factor",
+        type=int,
+        default=1
+    )
+
     return parser

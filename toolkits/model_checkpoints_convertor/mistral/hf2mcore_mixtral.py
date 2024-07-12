@@ -620,6 +620,8 @@ def convert_checkpoint_from_transformers_to_megatron(args):
                     # reverting to previous logic
                     out_name = "pre_mlp_layernorm"
                     layer_name = f"layers.{layer}.{out_name}.{weight_or_bias}"
+                    #out_name = "mlp.linear_fc1.layer_norm_weight"
+                    #layer_name = f"layers.{layer}.{out_name}"
 
                 # handle attention K, V, Q weights
                 elif (
